@@ -1,30 +1,36 @@
 import React from "react";
 import styled from "styled-components";
 
-const Center = styled.p`
+const SwapiPowered = styled.p`
   text-align: center;
-`;
-
-const SwapiButton = styled.a`
+  margin: 0;
   cursor: pointer;
-  background: transparent;
-  font-size: 16px;
-  border-radius: 3px;
+  font-size: 13px;
+  border-radius: 50px;
   color: #fff !important;
-  border: 1px solid #fff;
-  margin: 0 1em;
-  padding: 0.25em 1em;
+  border: 1px dashed #fff;
+  padding: 5px 8px;
   transition: 0.5s all ease-out;
   &:hover {
-    background-color: palevioletred;
+    background-color: var(--yellow);
+    text-decoration: none;
     color: white;
+    border: none;
+  }
+
+  & > a {
+    color: #fff;
+  }
+  & > a:hover {
+    text-decoration: none;
+    color: #fff;
   }
 `;
 
 const Swapi = () => (
-  <React.Fragment>
-    <SwapiButton>Swapi.co Powered</SwapiButton>
-  </React.Fragment>
+  <SwapiPowered>
+    <a href="https://swapi.co/">Swapi.co Powered</a>
+  </SwapiPowered>
 );
 
 export default Swapi;

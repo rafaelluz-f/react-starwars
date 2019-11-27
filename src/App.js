@@ -1,49 +1,79 @@
-import React from 'react';
-import axios from 'axios';
-import Button from 'react-bootstrap/Button';
-import styled from 'styled-components';
-import customCss from './assets/css/custom.css';
-import Header from './components/Header';
+import React from "react";
+import axios from "axios";
+import { createGlobalStyle } from "styled-components";
+import NavApp from "./components/NavApp";
+import MastHead from "./components/MastHead";
+import CharactersCard from "./components/CharactersCard";
+import Footer from "./components/Footer";
+
+const GlobalStyle = createGlobalStyle`
+  html body {
+    background:#000;
+    color:#fff;
+  }
+`;
 
 export default class App extends React.Component {
-    state = {
-        peoples: []
-    };
+  state = {
+    loading: true,
+    characters: [],
+    filterCharacters: "",
+  };
 
-    componentDidMount() {
-        axios.get(`https://swapi.co/api/people`).then(res => {
-            const peoples = res.data.results;
-            this.setState({ peoples });
-            console.log(peoples);
-        });
-    }
-
-    render() {
-        const Button = styled.button`
-            cursor: pointer;
-            background: transparent;
-            font-size: 16px;
-            border-radius: 3px;
-            color: palevioletred;
-            border: 2px solid palevioletred;
-            margin: 0 1em;
-            padding: 0.25em 1em;
-            transition: 0.5s all ease-out;
-            &:hover {
-                background-color: palevioletred;
-                color: white;
-            }
-        `;
-        const { peoples } = this.state;
-        return (
-            <div>
-                <Header />
-                <h1>HELLO RAFAEL BOILERPLATE REACT</h1>
-                {peoples.map(people => (
-                    <li>{people.name}</li>
-                ))}
-                <Button variant="danger">Teste</Button>
-            </div>
+  componentDidMount() {
+    axios
+      .all([
+        axios.get("https://swapi.co/api/people/?page=1"),
+        axios.get("https://swapi.co/api/people/?page=2"),
+        axios.get("https://swapi.co/api/people/?page=3"),
+        axios.get("https://swapi.co/api/people/?page=4"),
+        axios.get("https://swapi.co/api/people/?page=5"),
+        axios.get("https://swapi.co/api/people/?page=6"),
+        axios.get("https://swapi.co/api/people/?page=7"),
+        axios.get("https://swapi.co/api/people/?page=8"),
+        axios.get("https://swapi.co/api/people/?page=9"),
+      ])
+      .then((res) => {
+        const allCharacters = res.reduce(
+          (reduceStore, item) => reduceStore.concat(item.data.results),
+          []
         );
-    }
+        this.setState({
+          loading: false,
+          characters: allCharacters,
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
+  observerSearchOnChange = () => {
+    this.setState({
+      filterCharacters: event.target.value,
+    });
+  };
+
+  render() {
+    const { characters, loading, filterCharacters } = this.state;
+    const filteredCharacters = characters.filter((character) =>
+      character.name.toLowerCase().includes(filterCharacters)
+    );
+    return (
+      <>
+        <GlobalStyle />
+        <header>
+          <NavApp />
+          <MastHead
+            charactersToFilter={characters}
+            observerSearchOnChange={this.observerSearchOnChange}
+          />
+        </header>
+        <main>
+          <CharactersCard loading={loading} characters={filteredCharacters} />
+        </main>
+        <Footer />
+      </>
+    );
+  }
 }
